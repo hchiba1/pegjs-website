@@ -23,7 +23,8 @@
   let edgePropHash = {};
 }
 
-PG = lines:NodeOrEdge* CommentLine*
+
+PG = EOF / lines:NodeOrEdge+ EOF
 {
   return {
     nodes: lines.map(l => l.node).filter(v => v),
@@ -49,8 +50,9 @@ NodeOrEdge = n:Node
     edge: e
   }
 }
+/ EmptyLine
 
-Node = CommentLine* WS* id:Value l:Label* p:Property* InlineComment EndOfLine
+Node = id:$Key l:Label* p:Property* WS* EndOfLine
 {
   let propObj = {};
   p.forEach(prop => {
@@ -59,6 +61,7 @@ Node = CommentLine* WS* id:Value l:Label* p:Property* InlineComment EndOfLine
     } else {
       propObj[prop.key] = [prop.value];
     }
+    // nodePropHash[prop.key] = true;
     if (nodePropHash[prop.key]) {
       nodePropHash[prop.key]++;
     } else {
@@ -78,12 +81,13 @@ Node = CommentLine* WS* id:Value l:Label* p:Property* InlineComment EndOfLine
 
   return {
     id: id,
+    location: location(),
     labels: l,
     properties: propObj
   }
 }
 
-Edge = CommentLine* WS* f:Value WS+ d:Direction WS+ t:Value l:Label* p:Property* InlineComment EndOfLine
+Edge = f:$Key WS+ d:Direction WS+ t:Key l:Label* p:Property* WS* EndOfLine
 {
   let propObj = {};
   p.forEach(prop => {
@@ -92,6 +96,7 @@ Edge = CommentLine* WS* f:Value WS+ d:Direction WS+ t:Value l:Label* p:Property*
     } else {
       propObj[prop.key] = [prop.value];
     }
+    // edgePropHash[prop.key] = true;
     if (edgePropHash[prop.key]) {
       edgePropHash[prop.key]++;
     } else {
@@ -112,18 +117,19 @@ Edge = CommentLine* WS* f:Value WS+ d:Direction WS+ t:Value l:Label* p:Property*
   return {
     from: f,
     to: t,
+    location: location(),
     direction: d,
     labels: l,
     properties: propObj
   }
 }
 
-Label = Delimiter ':' WS* l:Value
+Label = Delimiter+ ':' WS* l:Key
 {
   return l
 }
 
-Property = Delimiter k:Value WS* ':' WS* v:Value
+Property = Delimiter+ k:Key WS* ':' WS* v:Value
 {
   return {
     key: k,
@@ -185,7 +191,7 @@ SingleQuotedChar = !("'" / "\\") char:.
   return esc;
 }
 
-Value = Number & SPECIAL_CHAR
+Key = Number & SPECIAL_CHAR
 {
   return text();
 }
@@ -194,10 +200,24 @@ Value = Number & SPECIAL_CHAR
   return chars.join('');
 }
 / "'" chars:SingleQuotedChar* "'"
+{ 
+  return chars.join('');
+}
+/ chars:(NON_SPECIAL_CHAR)+
 {
   return chars.join('');
 }
-/ chars:NON_SPECIAL_CHAR+
+
+
+Value = '"' chars:DoubleQuotedChar* '"'
+{
+  return chars.join('');
+}
+/ "'" chars:SingleQuotedChar* "'"
+{ 
+  return chars.join('');
+}
+/ chars:(NON_SPECIAL_CHAR / ':')+
 {
   return chars.join('');
 }
@@ -218,11 +238,9 @@ EOF = !.
 
 EndOfLine = EOF / NEWLINE
 
-CommentLine = WS* (('#' NON_NEWLINE* EndOfLine) / NEWLINE)
+Delimiter = (WS* NEWLINE WS+) / WS+
 
-InlineComment = (WS+ '#' WS+ NON_NEWLINE*) / WS*
-
-Delimiter = (InlineComment NEWLINE WS+) / WS+
+EmptyLine = WS+ EOF /  WS* NEWLINE
 </textarea>
             </div>
           </td>
