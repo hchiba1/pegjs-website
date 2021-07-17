@@ -1,2 +1,4 @@
 /node_modules
 /tmp/restart.txt
+/package-lock.json
+/*.log
