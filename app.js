@@ -5,8 +5,7 @@ const express = require("express");
 const layout = require("express-layout");
 const logger = require("morgan");
 
-const PORT = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 10000;
-const IP = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+const PORT = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8080;
 
 const app = express();
 app.set("views", __dirname + "/views");
@@ -36,9 +35,7 @@ app.get('/pg-formatter', (req, res) => {
 
 /* Main */
 
-var server = app.listen(PORT, IP, () => {
-  const host = server.address().address;
-  const port = server.address().port;
+app.listen(PORT, () => {
   const env = app.get("env");
-  console.log(`PEG.js website running at http://${host}:${port} in ${env} mode...`);
+  console.log(`PEG.js website running at PORT ${PORT} in ${env} mode...`);
 })
