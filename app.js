@@ -30,7 +30,7 @@ app.locals.menuItem = function(req, id, title) {
 };
 
 app.get('/pg-formatter', (req, res) => {
-  res.render("online", { title: "Validator", layout: "layout-online" });
+  res.render("online", { title: "PG Formatter", layout: "layout-online" });
 });
 
 /* Main */
