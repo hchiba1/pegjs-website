@@ -19,20 +19,9 @@ app.use((req, res, next) => {
   next();
 });
 
-/* Helpers */
-app.locals.menuItem = function(req, id, title) {
-    return "<a"
-      + (req.path === "/" + id ? " class=\"current\"" : "")
-      + " href=\"/" + id + "\">"
-      + title
-      + "</a>";
-};
-
 app.get('/pg-formatter', (req, res) => {
   res.render("online", { title: "PG Formatter", layout: "layout-online" });
 });
-
-/* Main */
 
 app.listen(PORT, () => {
   const env = app.get("env");
