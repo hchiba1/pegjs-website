@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const bodyParser = require("body-parser");
 const express = require("express");
 const layout = require("express-layout");
 const logger = require("morgan");
