@@ -11,7 +11,7 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
-app.use(express.static(__dirname + "/public"));
+app.use('/pg-formatter', express.static(__dirname + "/public"));
 
 app.use(layout());
 app.use((req, res, next) => {
