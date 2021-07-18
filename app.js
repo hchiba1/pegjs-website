@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/pg-formatter', (req, res) => {
-  res.render("content", { title: "PG Formatter", layout: "layout-online" });
+  res.render("content", { title: "PG Formatter", layout: "layout" });
 });
 
 app.listen(PORT, () => {
